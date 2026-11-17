@@ -28,6 +28,42 @@
   </div>
 </template>
 
+<style>
+body {
+  background-color: #f4f6fb;
+}
+.navbar {
+  background-color: #2b3a67 !important;
+}
+.navbar .router-link-active {
+  color: #fff !important;
+  border-bottom: 2px solid #ffc107;
+}
+.card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+.card h2 {
+  color: #2b3a67;
+}
+h3 {
+  color: #2b3a67;
+  font-weight: 600;
+}
+.table {
+  background-color: #fff;
+}
+.table thead th {
+  background-color: #e8ecf7;
+  color: #2b3a67;
+}
+.btn-primary {
+  background-color: #3f5bd6;
+  border-color: #3f5bd6;
+}
+</style>
+
 <script>
 import { getUser } from './api.js'
 

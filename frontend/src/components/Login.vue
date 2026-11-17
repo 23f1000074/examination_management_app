@@ -1,7 +1,7 @@
 <template>
   <div class="row justify-content-center">
-    <div class="col-md-5">
-      <h3 class="mb-3">Login</h3>
+    <div class="col-md-5 card card-body mt-4">
+      <h3 class="mb-3">Examination Management Portal</h3>
       <div class="alert alert-danger" v-if="error">{{ error }}</div>
       <form @submit.prevent="login">
         <div class="mb-3">
