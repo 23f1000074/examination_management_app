@@ -1,0 +1,8 @@
+﻿node_modules/
+dist/
+__pycache__/
+*.pyc
+backend/emp.db
+backend/instance/
+backend/exports/
+backend/reports/
