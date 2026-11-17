@@ -1,0 +1,1171 @@
+openapi: 3.0.3
+info:
+  title: Examination Management Portal API
+  version: "2.0"
+  description: Flask REST API for the EMP. All endpoints except register and login need a JWT Bearer token.
+servers:
+  - url: http://localhost:5000/api
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /register:
+    post:
+      summary: "Register a student"
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: {}
+                username: {}
+                email: {}
+                password: {}
+                phone: {}
+                department: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+  /login:
+    post:
+      summary: "Login (all roles), returns JWT token"
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username: {}
+                password: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+  /profile:
+    get:
+      summary: "Get own profile"
+      tags: [auth]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+    put:
+      summary: "Update own profile"
+      tags: [auth]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: {}
+                email: {}
+                phone: {}
+                department: {}
+                password: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/stats:
+    get:
+      summary: "Dashboard statistics (cached in Redis)"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/courses:
+    get:
+      summary: "List courses"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+    post:
+      summary: "Create a course"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code: {}
+                name: {}
+                description: {}
+                status: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/courses/{id}:
+    put:
+      summary: "Update a course"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code: {}
+                name: {}
+                description: {}
+                status: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+    delete:
+      summary: "Remove a course (only if it has no exams)"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/exams:
+    get:
+      summary: "List examinations"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+    post:
+      summary: "Create an examination"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                course_id: {}
+                name: {}
+                exam_type: {}
+                duration: {}
+                max_marks: {}
+                slot_create_start: {}
+                slot_create_end: {}
+                booking_start: {}
+                booking_end: {}
+                instructions: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/exams/{id}:
+    put:
+      summary: "Update an examination"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                course_id: {}
+                name: {}
+                exam_type: {}
+                duration: {}
+                max_marks: {}
+                slot_create_start: {}
+                slot_create_end: {}
+                booking_start: {}
+                booking_end: {}
+                instructions: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+    delete:
+      summary: "Delete an examination (only if no bookings)"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/exams/{id}/status:
+    put:
+      summary: "Change stage: open/close slot creation and booking"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/exams/{id}/examiners:
+    put:
+      summary: "Assign examiners to an exam"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                examiner_ids: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/exams/{id}/rubrics:
+    get:
+      summary: "List rubric criteria of an exam"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+    post:
+      summary: "Add a rubric criterion"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                criterion: {}
+                weightage: {}
+                description: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/rubrics/{id}:
+    put:
+      summary: "Update a rubric criterion"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                criterion: {}
+                weightage: {}
+                description: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+    delete:
+      summary: "Delete a rubric criterion"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/examiners:
+    get:
+      summary: "List examiners"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+    post:
+      summary: "Add an examiner"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: {}
+                username: {}
+                email: {}
+                password: {}
+                phone: {}
+                department: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/examiners/{id}:
+    put:
+      summary: "Update an examiner / change status"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: {}
+                email: {}
+                phone: {}
+                department: {}
+                status: {}
+                password: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/students:
+    get:
+      summary: "List students"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/students/{id}/status:
+    put:
+      summary: "Activate or deactivate a student"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/slots:
+    get:
+      summary: "View all examiner slots (optional exam_id filter)"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/slots/{id}:
+    put:
+      summary: "Reschedule a slot"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date: {}
+                start_time: {}
+                end_time: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/slots/{id}/examiner:
+    put:
+      summary: "Change the assigned examiner of a slot"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                examiner_id: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/bookings:
+    get:
+      summary: "View all bookings (history)"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/bookings/{id}/reschedule:
+    put:
+      summary: "Move a booking to another slot"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slot_id: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /admin/search:
+    get:
+      summary: "Search students / examiners / exams / bookings (type, q)"
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: admin"
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /examiner/dashboard:
+    get:
+      summary: "Assigned exams and counts"
+      tags: [examiner]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: examiner"
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /examiner/slots:
+    get:
+      summary: "List own slots"
+      tags: [examiner]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: examiner"
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+    post:
+      summary: "Create a slot (only in slot creation period)"
+      tags: [examiner]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: examiner"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exam_id: {}
+                date: {}
+                start_time: {}
+                end_time: {}
+                capacity: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /examiner/slots/{id}:
+    put:
+      summary: "Update a slot (only before booking starts)"
+      tags: [examiner]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: examiner"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date: {}
+                start_time: {}
+                end_time: {}
+                capacity: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+    delete:
+      summary: "Remove a slot (only before booking starts)"
+      tags: [examiner]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: examiner"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /examiner/slots/{id}/students:
+    get:
+      summary: "Students booked in a slot"
+      tags: [examiner]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: examiner"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /examiner/bookings/{id}/evaluation:
+    get:
+      summary: "Rubric and marks of a booking"
+      tags: [examiner]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: examiner"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /examiner/bookings/{id}/evaluate:
+    post:
+      summary: "Submit rubric marks and remarks"
+      tags: [examiner]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: examiner"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scores: {}
+                remarks: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /examiner/exams/{id}/status:
+    put:
+      summary: "Set exam status to Closed or Completed"
+      tags: [examiner]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: examiner"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /student/dashboard:
+    get:
+      summary: "Available exams, slots, booked slots, results"
+      tags: [student]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: student"
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /student/exams:
+    get:
+      summary: "Search / filter examinations (q, course_id, status)"
+      tags: [student]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: student"
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /student/courses:
+    get:
+      summary: "List courses for the filter"
+      tags: [student]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: student"
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /student/exams/{id}/slots:
+    get:
+      summary: "Available slots of an exam"
+      tags: [student]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: student"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /student/bookings:
+    get:
+      summary: "Own booking history"
+      tags: [student]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: student"
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+    post:
+      summary: "Book a slot"
+      tags: [student]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: student"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slot_id: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /student/bookings/{id}:
+    delete:
+      summary: "Cancel a booking before the deadline"
+      tags: [student]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: student"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /student/results:
+    get:
+      summary: "Published results and examiner feedback"
+      tags: [student]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: student"
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /student/export:
+    post:
+      summary: "Start CSV export of history (Celery job)"
+      tags: [student]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: student"
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /student/export/{task_id}:
+    get:
+      summary: "Status of the export job"
+      tags: [student]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: student"
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
+  /student/export/file/{filename}:
+    get:
+      summary: "Download the exported CSV"
+      tags: [student]
+      security:
+        - bearerAuth: []
+      description: "Allowed role: student"
+      parameters:
+        - name: filename
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Validation error (message in JSON)
+        "401":
+          description: Missing or invalid token
+        "403":
+          description: Role not allowed
